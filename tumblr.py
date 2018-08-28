@@ -9,14 +9,15 @@ import sys
 import os
 import re
 
+proxy={"http" : "127.0.0.1:1080"} #增加本地代理
 
 def get_source(nickname, page_index, source_type):
     aim_url = "https://%s.tumblr.com/page/%d" % (nickname, page_index)
     print('[o] Get source from blog %s ...' % aim_url)
     try:
-        response_string = requests.get(url=aim_url, timeout=50).content.decode('utf8')
-        if "Older Posts" not in response_string: #用Older Posts判定是否为有资源的最后一页
-        #if "posts-no-posts content" not in response_string:  因为tumble页面改动这里对无资源的判定已经失效了
+        response_string = requests.get(url=aim_url, timeout=50, proxies=proxy).content.decode('utf8')
+        if "Older Posts" in response_string: #用Older Posts判定是否为有资源的最后一页
+        # if "posts-no-posts content" not in response_string:  #因为tumble页面改动这里对无资源的判定已经失效了
             if source_type == "images":
                 source_elements = re.findall(r'<img(.+?)>', response_string)
             else:
@@ -36,7 +37,7 @@ def get_source(nickname, page_index, source_type):
                     else:
                         if "/video/" in this_source:
                             video_url = re.findall(r"src='(.+?)'", this_source)[0]
-                            video_response = requests.get(url=video_url, timeout=50).content.decode('utf8')
+                            video_response = requests.get(url=video_url, timeout=50, proxies=proxy).content.decode('utf8')
                             video_source = re.findall(r'<source src="(.+?)"', video_response)[0]
                             video_name = video_source.split('tumblr_')[1].split('/')[0] + '.mp4'
                             write_file(video_source, dir_path, video_name)
@@ -51,11 +52,11 @@ def get_source(nickname, page_index, source_type):
         print(e)
         get_source(nickname, page_index, source_type)
 
-
+ 
 def write_file(source_url, dir_path, file_name):
     if not os.path.exists(dir_path + file_name):
         print('[*] Source %s is downloading...' % file_name)
-        file_download = requests.get(url=source_url, timeout=50)
+        file_download = requests.get(url=source_url, timeout=50, proxies=proxy)
         if file_download.status_code == 200:
             open(dir_path + file_name, 'wb').write(file_download.content)
     else:
