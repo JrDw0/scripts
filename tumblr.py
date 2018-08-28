@@ -2,6 +2,7 @@
 # coding=utf-8
 # a old dirver RSS list https://pastebin.com/raw/zmKcfPqg
 # from https://www.92ez.com/?action=show&id=23460
+# edit by JrD 2018/8/29
 
 import requests
 import sys
@@ -14,7 +15,8 @@ def get_source(nickname, page_index, source_type):
     print('[o] Get source from blog %s ...' % aim_url)
     try:
         response_string = requests.get(url=aim_url, timeout=50).content.decode('utf8')
-        if "posts-no-posts content" not in response_string:
+        if "Older Posts" not in response_string: #用Older Posts判定是否为有资源的最后一页
+        #if "posts-no-posts content" not in response_string:  因为tumble页面改动这里对无资源的判定已经失效了
             if source_type == "images":
                 source_elements = re.findall(r'<img(.+?)>', response_string)
             else:
