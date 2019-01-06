@@ -13,7 +13,7 @@ headers = {"User-Agent":
 
 def get_proxy():
     of = open('proxy.txt', 'w+')
-    for page in range(1, 3):
+    for page in range(1, 10):
         html_doc = requests.get('http://www.xici.net.co/nn/' + str(page), headers=headers).text
         html_doc = html_doc.replace("\r\n", "").replace("\t", "").replace("\n", "")
         soup = BeautifulSoup(html_doc, "html.parser")
@@ -62,8 +62,6 @@ if __name__ == "__main__":
     b1 = []
     b2 = []
     b3 = []
-
-
     with open('proxy.txt', 'r') as f:
         for a in f.readlines():
             b = a.split()
